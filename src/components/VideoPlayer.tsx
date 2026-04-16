@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  RotateCw, 
-  Volume2, 
-  Maximize, 
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  RotateCw,
+  Volume2,
+  Maximize,
   Captions,
   ListVideo,
   Settings
 } from "lucide-react";
-import imgVideo from "figma:asset/40d6516d8419860fd036d8ee2c01b6d8ebce5bf4.png";
 
-export const TOTAL_DURATION_SECONDS = 5780; // 1:36:20
+export const TOTAL_DURATION_SECONDS = 5780; // kept for external imports (SegmentEditor validation)
 
 export const parseTimeToSeconds = (timeStr: string) => {
   const parts = timeStr.split(':').map(Number);
@@ -44,38 +43,44 @@ export interface Comment {
   timestamp: string; // When the comment was posted
 }
 
+const DEFAULT_VIDEO_URL = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+
 export interface VideoPlayerProps {
   segments?: Segment[];
   comments?: Comment[];
   currentTime?: number;
   onTimeChange?: (time: number) => void;
-  /** 
+  videoUrl?: string;
+  /**
    * 'default': Includes outer border, padding, and info box (used in Editor).
    * 'clean': Only the video player and controls (used in Player Page).
    */
   variant?: 'default' | 'clean';
 }
 
-export function VideoPlayer({ 
+export function VideoPlayer({
   segments = [],
   comments = [],
   currentTime: externalTime,
   onTimeChange,
+  videoUrl = DEFAULT_VIDEO_URL,
   variant = 'default'
 }: VideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [internalTime, setInternalTime] = useState(333); // Start at 5:33 roughly
+  const [internalTime, setInternalTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
 
   const isControlled = externalTime !== undefined;
   const currentTime = isControlled ? externalTime : internalTime;
   const isClean = variant === 'clean';
+  // Use real duration once loaded, fall back to constant so chapter markers don't break before load
+  const effectiveDuration = duration > 0 ? duration : TOTAL_DURATION_SECONDS;
 
   const handleTimeChange = (newTime: number) => {
-    // Clamp between 0 and TOTAL_DURATION_SECONDS
-    const clamped = Math.max(0, Math.min(TOTAL_DURATION_SECONDS, newTime));
-    
+    const clamped = Math.max(0, Math.min(effectiveDuration, newTime));
     if (isControlled && onTimeChange) {
       onTimeChange(clamped);
     }
@@ -84,38 +89,71 @@ export function VideoPlayer({
     }
   };
 
-  // Simulate video playing
+  // Attach native video events
   useEffect(() => {
-    let interval: any;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        handleTimeChange(currentTime + 1);
-      }, 1000);
+    const video = videoRef.current;
+    if (!video) return;
+
+    const onLoadedMetadata = () => setDuration(video.duration);
+    const onTimeUpdate = () => handleTimeChange(video.currentTime);
+    const onEnded = () => setIsPlaying(false);
+
+    video.addEventListener('loadedmetadata', onLoadedMetadata);
+    video.addEventListener('timeupdate', onTimeUpdate);
+    video.addEventListener('ended', onEnded);
+
+    return () => {
+      video.removeEventListener('loadedmetadata', onLoadedMetadata);
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      video.removeEventListener('ended', onEnded);
+    };
+  }, []); // mount/unmount only — handleTimeChange is stable via closure over refs
+
+  // Sync external currentTime → video element (e.g. clicking a chapter in SegmentEditor)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || externalTime === undefined) return;
+    if (Math.abs(video.currentTime - externalTime) > 0.5) {
+      video.currentTime = externalTime;
     }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTime]); // Depend on currentTime to increment from it
+  }, [externalTime]);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isPlaying) {
+      video.pause();
+      setIsPlaying(false);
+    } else {
+      video.play().catch(() => setIsPlaying(false));
+      setIsPlaying(true);
+    }
+  };
+
+  const seekTo = (newTime: number) => {
+    const clamped = Math.max(0, Math.min(effectiveDuration, newTime));
+    if (videoRef.current) {
+      videoRef.current.currentTime = clamped;
+    }
+    handleTimeChange(clamped);
+  };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percent = Math.min(Math.max(x / rect.width, 0), 1);
-    handleTimeChange(Math.floor(percent * TOTAL_DURATION_SECONDS));
+    seekTo(Math.floor(percent * effectiveDuration));
   };
 
   const handleTimelineMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percent = Math.min(Math.max(x / rect.width, 0), 1);
-    setHoverTime(Math.floor(percent * TOTAL_DURATION_SECONDS));
+    setHoverTime(Math.floor(percent * effectiveDuration));
   };
 
   const handleTimelineMouseLeave = () => {
     setHoverTime(null);
-  };
-
-  const handleSegmentClick = (timeStr: string) => {
-    handleTimeChange(parseTimeToSeconds(timeStr));
-    setIsPlaying(true);
   };
 
   // Calculate segments with range for the chapter visualization
@@ -123,7 +161,7 @@ export function VideoPlayer({
   const segmentsWithRange = sortedSegments.map((seg, index) => {
     const start = parseTimeToSeconds(seg.time);
     const nextSeg = sortedSegments[index + 1];
-    const end = nextSeg ? parseTimeToSeconds(nextSeg.time) : TOTAL_DURATION_SECONDS;
+    const end = nextSeg ? parseTimeToSeconds(nextSeg.time) : effectiveDuration;
     return { ...seg, start, end };
   });
 
@@ -143,7 +181,12 @@ export function VideoPlayer({
         {/* Video Area */}
         <div className="w-full relative aspect-video bg-black rounded overflow-hidden group flex flex-col">
              <div className="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
-                <img src={imgVideo} alt="Video Player" className="w-full h-full object-contain opacity-90" />
+                <video
+                  ref={videoRef}
+                  src={videoUrl}
+                  className="w-full h-full object-contain"
+                  preload="metadata"
+                />
                 
                 {/* Comment Banner - Bottom Right */}
                 {selectedComment && (
@@ -178,8 +221,8 @@ export function VideoPlayer({
                 )}
                 
                 {/* Play/Pause Overlay Button (Center) */}
-                <button 
-                    onClick={() => setIsPlaying(!isPlaying)}
+                <button
+                    onClick={togglePlay}
                     className="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/10 transition-colors"
                 >
                     {!isPlaying && (
@@ -194,17 +237,17 @@ export function VideoPlayer({
              <div className="h-14 bg-[#1a1a1a] flex items-center px-4 gap-4 z-20 shrink-0">
                 {/* Left Controls */}
                 <div className="flex items-center gap-4 text-white">
-                    <button onClick={() => setIsPlaying(!isPlaying)} className="hover:text-[#0099CC] transition-colors">
+                    <button onClick={togglePlay} className="hover:text-[#0099CC] transition-colors">
                         {isPlaying ? <Pause size={20} fill="white" /> : <Play size={20} fill="white" />}
                     </button>
-                    <button onClick={() => handleTimeChange(currentTime - 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
+                    <button onClick={() => seekTo(currentTime - 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
                         <RotateCcw size={18} />
                     </button>
-                    <button onClick={() => handleTimeChange(currentTime + 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
+                    <button onClick={() => seekTo(currentTime + 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
                         <RotateCw size={18} />
                     </button>
                     <div className="text-xs font-medium tracking-wide">
-                        {formatSecondsToTime(currentTime)} / {formatSecondsToTime(TOTAL_DURATION_SECONDS)}
+                        {formatSecondsToTime(currentTime)} / {formatSecondsToTime(effectiveDuration)}
                     </div>
                 </div>
 
@@ -219,18 +262,19 @@ export function VideoPlayer({
                     <div className="absolute top-0 left-0 h-full bg-gray-500 rounded-full w-[60%] pointer-events-none"></div>
                     
                     {/* Played bar */}
-                    <div 
+                    <div
                         className="absolute top-0 left-0 h-full bg-[#3C9EEA] rounded-full pointer-events-none"
-                        style={{ width: `${(currentTime / TOTAL_DURATION_SECONDS) * 100}%` }}
+                        style={{ width: `${(currentTime / effectiveDuration) * 100}%` }}
                     ></div>
 
                     {/* Chapter Separators */}
                     {sortedSegments.map((segment) => {
                       if (segment.time === "00:00:00") return null;
                       const seconds = parseTimeToSeconds(segment.time);
-                      const percent = (seconds / TOTAL_DURATION_SECONDS) * 100;
+                      const percent = (seconds / effectiveDuration) * 100;
+                      if (percent > 100) return null; // hide markers beyond real duration
                       return (
-                        <div 
+                        <div
                           key={`sep-${segment.id}`}
                           className="absolute top-0 bottom-0 w-[2px] bg-[#1a1a1a] z-20 pointer-events-none"
                           style={{ left: `${percent}%`, transform: 'translateX(-50%)' }}
@@ -241,7 +285,8 @@ export function VideoPlayer({
                     {/* Comment Markers */}
                     {comments.map((comment) => {
                       const seconds = parseTimeToSeconds(comment.time);
-                      const percent = (seconds / TOTAL_DURATION_SECONDS) * 100;
+                      const percent = (seconds / effectiveDuration) * 100;
+                      if (percent > 100) return null;
                       return (
                         <button
                           key={`comment-${comment.id}`}
@@ -260,9 +305,9 @@ export function VideoPlayer({
                     {hoverTime !== null && (() => {
                       const segment = getSegmentAtTime(hoverTime);
                       return (
-                        <div 
+                        <div
                           className="absolute bottom-full mb-3 bg-black/90 text-white text-[11px] px-2 py-1.5 rounded whitespace-nowrap shadow-lg z-50 pointer-events-none"
-                          style={{ left: `${(hoverTime / TOTAL_DURATION_SECONDS) * 100}%`, transform: 'translateX(-50%)' }}
+                          style={{ left: `${(hoverTime / effectiveDuration) * 100}%`, transform: 'translateX(-50%)' }}
                         >
                           <div className="font-bold text-[#3C9EEA] mb-0.5">{formatSecondsToTime(hoverTime)}</div>
                           {segment && <div>{segment.title || "未命名段落"}</div>}
@@ -271,9 +316,9 @@ export function VideoPlayer({
                     })()}
 
                     {/* Handle */}
-                    <div 
+                    <div
                         className="absolute top-1/2 h-3.5 w-3.5 bg-[#3C9EEA] rounded-full -translate-y-1/2 -translate-x-1/2 shadow transition-transform group-hover/timeline:scale-125 z-30"
-                        style={{ left: `${(currentTime / TOTAL_DURATION_SECONDS) * 100}%` }}
+                        style={{ left: `${(currentTime / effectiveDuration) * 100}%` }}
                     ></div>
                 </div>
 
