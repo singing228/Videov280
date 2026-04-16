@@ -233,51 +233,38 @@ export function VideoPlayer({
                 </button>
              </div>
 
-             {/* Controls Bar */}
-             <div className="h-14 bg-[#1a1a1a] flex items-center px-4 gap-4 z-20 shrink-0">
-                {/* Left Controls */}
-                <div className="flex items-center gap-4 text-white">
-                    <button onClick={togglePlay} className="hover:text-[#0099CC] transition-colors">
-                        {isPlaying ? <Pause size={20} fill="white" /> : <Play size={20} fill="white" />}
-                    </button>
-                    <button onClick={() => seekTo(currentTime - 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
-                        <RotateCcw size={18} />
-                    </button>
-                    <button onClick={() => seekTo(currentTime + 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
-                        <RotateCw size={18} />
-                    </button>
-                    <div className="text-xs font-medium tracking-wide">
-                        {formatSecondsToTime(currentTime)} / {formatSecondsToTime(effectiveDuration)}
-                    </div>
-                </div>
+             {/* Controls Bar - timeline row on top, buttons row below */}
+             <div className="bg-gradient-to-t from-black/90 to-black/50 shrink-0 z-20">
 
-                {/* Timeline */}
-                <div 
-                    className="flex-1 h-1.5 bg-gray-600 rounded-full cursor-pointer relative group/timeline mx-2"
+                {/* Timeline Row */}
+                <div
+                    className="w-full h-4 cursor-pointer relative group/timeline"
                     onClick={handleSeek}
                     onMouseMove={handleTimelineMouseMove}
                     onMouseLeave={handleTimelineMouseLeave}
                 >
-                    {/* Buffered bar (simulated) */}
-                    <div className="absolute top-0 left-0 h-full bg-gray-500 rounded-full w-[60%] pointer-events-none"></div>
-                    
-                    {/* Played bar */}
-                    <div
-                        className="absolute top-0 left-0 h-full bg-[#3C9EEA] rounded-full pointer-events-none"
-                        style={{ width: `${(currentTime / effectiveDuration) * 100}%` }}
-                    ></div>
+                    {/* Visual track — grows on hover, clips played/buffered bars */}
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[3px] group-hover/timeline:h-[5px] transition-[height] duration-150 bg-white/30 overflow-hidden pointer-events-none">
+                        {/* Buffered bar (simulated) */}
+                        <div className="absolute top-0 left-0 h-full bg-white/20 w-[60%]"></div>
+                        {/* Played bar */}
+                        <div
+                            className="absolute top-0 left-0 h-full bg-[#2B85D8]"
+                            style={{ width: `${(currentTime / effectiveDuration) * 100}%` }}
+                        ></div>
+                    </div>
 
-                    {/* Chapter Separators */}
+                    {/* Chapter Separators — slightly taller than track, white, vertically centred */}
                     {sortedSegments.map((segment) => {
                       if (segment.time === "00:00:00") return null;
                       const seconds = parseTimeToSeconds(segment.time);
                       const percent = (seconds / effectiveDuration) * 100;
-                      if (percent > 100) return null; // hide markers beyond real duration
+                      if (percent > 100) return null;
                       return (
                         <div
                           key={`sep-${segment.id}`}
-                          className="absolute top-0 bottom-0 w-[2px] bg-[#1a1a1a] z-20 pointer-events-none"
-                          style={{ left: `${percent}%`, transform: 'translateX(-50%)' }}
+                          className="absolute w-[2px] h-[5px] group-hover/timeline:h-[7px] bg-white z-20 pointer-events-none transition-[height] duration-150"
+                          style={{ left: `${percent}%`, top: '50%', transform: 'translate(-50%, -50%)' }}
                         />
                       );
                     })}
@@ -306,7 +293,7 @@ export function VideoPlayer({
                       const segment = getSegmentAtTime(hoverTime);
                       return (
                         <div
-                          className="absolute bottom-full mb-3 bg-black/90 text-white text-[11px] px-2 py-1.5 rounded whitespace-nowrap shadow-lg z-50 pointer-events-none"
+                          className="absolute bottom-full mb-2 bg-black/90 text-white text-[11px] px-2 py-1.5 rounded whitespace-nowrap shadow-lg z-50 pointer-events-none"
                           style={{ left: `${(hoverTime / effectiveDuration) * 100}%`, transform: 'translateX(-50%)' }}
                         >
                           <div className="font-bold text-[#3C9EEA] mb-0.5">{formatSecondsToTime(hoverTime)}</div>
@@ -315,23 +302,45 @@ export function VideoPlayer({
                       );
                     })()}
 
-                    {/* Handle */}
+                    {/* Handle — hidden by default, appears on timeline hover */}
                     <div
-                        className="absolute top-1/2 h-3.5 w-3.5 bg-[#3C9EEA] rounded-full -translate-y-1/2 -translate-x-1/2 shadow transition-transform group-hover/timeline:scale-125 z-30"
+                        className="absolute top-1/2 h-3 w-3 bg-white rounded-full -translate-y-1/2 -translate-x-1/2 shadow opacity-0 group-hover/timeline:opacity-100 transition-opacity z-30"
                         style={{ left: `${(currentTime / effectiveDuration) * 100}%` }}
                     ></div>
                 </div>
 
-                {/* Right Controls */}
-                <div className="flex gap-4 text-white items-center">
-                    <div className="flex items-center gap-2 group/vol">
-                        <Volume2 size={20} className="cursor-pointer hover:text-[#0099CC]" />
+                {/* Buttons Row */}
+                <div className="h-10 flex items-center px-3 gap-4">
+                    {/* Left Controls */}
+                    <div className="flex items-center gap-4 text-white">
+                        <button onClick={togglePlay} className="hover:text-[#0099CC] transition-colors">
+                            {isPlaying ? <Pause size={20} fill="white" /> : <Play size={20} fill="white" />}
+                        </button>
+                        <button onClick={() => seekTo(currentTime - 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
+                            <RotateCcw size={18} />
+                        </button>
+                        <button onClick={() => seekTo(currentTime + 10)} className="hover:text-[#0099CC] transition-colors group/tooltip relative">
+                            <RotateCw size={18} />
+                        </button>
+                        <div className="text-xs font-medium tracking-wide">
+                            {formatSecondsToTime(currentTime)} / {formatSecondsToTime(effectiveDuration)}
+                        </div>
                     </div>
-                    <span className="text-xs font-bold cursor-pointer hover:text-[#0099CC]">1x</span>
-                    <Captions size={20} className="cursor-pointer hover:text-[#0099CC]" />
-                    <ListVideo size={20} className="cursor-pointer hover:text-[#0099CC]" />
-                    <Settings size={20} className="cursor-pointer hover:text-[#0099CC]" />
-                    <Maximize size={20} className="cursor-pointer hover:text-[#0099CC]" />
+
+                    {/* Spacer */}
+                    <div className="flex-1" />
+
+                    {/* Right Controls */}
+                    <div className="flex gap-4 text-white items-center">
+                        <div className="flex items-center gap-2 group/vol">
+                            <Volume2 size={20} className="cursor-pointer hover:text-[#0099CC]" />
+                        </div>
+                        <span className="text-xs font-bold cursor-pointer hover:text-[#0099CC]">1x</span>
+                        <Captions size={20} className="cursor-pointer hover:text-[#0099CC]" />
+                        <ListVideo size={20} className="cursor-pointer hover:text-[#0099CC]" />
+                        <Settings size={20} className="cursor-pointer hover:text-[#0099CC]" />
+                        <Maximize size={20} className="cursor-pointer hover:text-[#0099CC]" />
+                    </div>
                 </div>
              </div>
         </div>
