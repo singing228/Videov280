@@ -62,6 +62,7 @@ function figmaAssetResolver() {
         '@': path.resolve(__dirname, './src'),
       },
     },
+    base: '/Videov280/',
     build: {
       target: 'esnext',
       outDir: 'build',

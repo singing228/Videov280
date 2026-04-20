@@ -128,10 +128,10 @@ export function VideoPlayerPage({
                                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[260px] bg-white p-3 rounded-lg shadow-[0px_4px_20px_rgba(0,0,0,0.15)] z-[100] border border-black/10 cursor-auto text-left">
                                      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-black/10 rotate-45"></div>
                                      <p className="text-[13px] text-[#333] leading-[1.5] mb-2 tracking-[0.2px]">
-                                       此內容可能由授課老師親自撰寫，或透過 NTU COOL 的 AI 協助產生後經老師審核修改。實際內容請以老師授課為主。
+                                       此區內容由授課老師提供，可能經過 NTU COOL 校內 AI 協助生成後由老師審核。
                                      </p>
                                      <p className="text-[13px] text-[#333] leading-[1.5] tracking-[0.2px]">
-                                       AI 摘要由 NTU COOL 團隊於校內機房運算生成，未使用雲端 AI 服務。
+                                       🔒 所有 AI 運算皆於校內機房執行，不使用雲端服務，課程內容不會外流。
                                      </p>
                                    </div>
                                  )}
@@ -284,10 +284,10 @@ export function VideoPlayerPage({
                         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[260px] bg-white p-3 rounded-lg shadow-[0px_4px_20px_rgba(0,0,0,0.15)] z-[100] border border-black/10 cursor-auto text-left">
                           <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-black/10 rotate-45"></div>
                           <p className="text-[13px] text-[#333] leading-[1.5] mb-2 tracking-[0.2px]">
-                            此內容可能由授課老師親自撰寫，或透過 NTU COOL 的 AI 協助產生後經老師審核修改。實際內容請以老師授課為主。
+                            此區內容由授課老師提供，可能經過 NTU COOL 校內 AI 協助生成後由老師審核。
                           </p>
                           <p className="text-[13px] text-[#333] leading-[1.5] tracking-[0.2px]">
-                            AI 內容由 NTU COOL 團隊於校內機房運算生成，未使用雲端 AI 服務。
+                            🔒 所有 AI 運算皆於校內機房執行，不使用雲端服務，課程內容不會外流。
                           </p>
                         </div>
                       )}

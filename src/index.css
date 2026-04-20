@@ -6,3 +6,13 @@
 @layer base {
   html, body, #root { min-height: 100vh; height: 100%; margin: 0; }
 }
+
+/* Hide Video.js control bar — we use a fully custom React control bar */
+.video-js .vjs-control-bar {
+  display: none !important;
+}
+
+/* Fill container without letterbox */
+.video-js video {
+  object-fit: cover;
+}

@@ -37,21 +37,22 @@ export function AiImportDialog({ open, onClose, onConfirm }: AiImportDialogProps
             請選擇一個字幕檔，匯入 AI 依該字幕生成的分段：
           </p>
 
-          <div className="flex flex-col w-full">
-            {/* Group 1 Header */}
+          <div className="flex flex-col w-full min-h-[448px]">
+
+            {/* Group Header */}
             <div className="py-[16px] pl-[16px] border-b border-black/12">
               <span className="text-[16px] font-bold text-[#333]">語音辨識自動生成字幕</span>
             </div>
 
             {/* Option 1: Auto Original */}
-            <div 
+            <div
               className="flex items-center h-[56px] border-b border-black/12 cursor-pointer hover:bg-gray-50"
               onClick={() => setSelected("auto-original")}
             >
               <div className="p-[9px]">
-                <Icon 
-                  name={selected === "auto-original" ? "p4501f00" : "p26f9ce00"} 
-                  size={24} 
+                <Icon
+                  name={selected === "auto-original" ? "p4501f00" : "p26f9ce00"}
+                  size={24}
                   fill={selected === "auto-original" ? "#0099CC" : "#333333"}
                   className={selected !== "auto-original" ? "opacity-60" : ""}
                 />
@@ -62,15 +63,15 @@ export function AiImportDialog({ open, onClose, onConfirm }: AiImportDialogProps
               </div>
             </div>
 
-            {/* Option 2: Auto English */}
-            <div 
+            {/* Option 2: English */}
+            <div
               className="flex items-center h-[56px] border-b border-black/12 cursor-pointer hover:bg-gray-50"
               onClick={() => setSelected("auto-english")}
             >
-               <div className="p-[9px]">
-                <Icon 
-                  name={selected === "auto-english" ? "p4501f00" : "p26f9ce00"} 
-                  size={24} 
+              <div className="p-[9px]">
+                <Icon
+                  name={selected === "auto-english" ? "p4501f00" : "p26f9ce00"}
+                  size={24}
                   fill={selected === "auto-english" ? "#0099CC" : "#333333"}
                   className={selected !== "auto-english" ? "opacity-60" : ""}
                 />
@@ -80,65 +81,21 @@ export function AiImportDialog({ open, onClose, onConfirm }: AiImportDialogProps
               </div>
             </div>
 
-            {/* Option 3: Auto Bilingual */}
-            <div 
-              className="flex items-center h-[56px] border-b border-black/12 cursor-pointer hover:bg-gray-50"
+            {/* Option 3: Bilingual */}
+            <div
+              className="flex items-center h-[56px] cursor-pointer hover:bg-gray-50"
               onClick={() => setSelected("auto-bilingual")}
             >
-               <div className="p-[9px]">
-                <Icon 
-                  name={selected === "auto-bilingual" ? "p4501f00" : "p26f9ce00"} 
-                  size={24} 
+              <div className="p-[9px]">
+                <Icon
+                  name={selected === "auto-bilingual" ? "p4501f00" : "p26f9ce00"}
+                  size={24}
                   fill={selected === "auto-bilingual" ? "#0099CC" : "#333333"}
                   className={selected !== "auto-bilingual" ? "opacity-60" : ""}
                 />
               </div>
               <div className="pl-[16px]">
                 <span className="text-[16px] text-[#333]">中英雙語</span>
-              </div>
-            </div>
-
-            {/* Group 2 Header */}
-            <div className="py-[16px] pl-[16px] border-b border-black/12">
-              <span className="text-[16px] font-bold text-[#333]">手動上傳字幕檔</span>
-            </div>
-
-             {/* Option 4: Chinese (Processing) */}
-             <div className="flex items-center h-[56px] border-b border-black/12 opacity-50 cursor-not-allowed">
-               <div className="p-[9px]">
-                <Icon name="p26f9ce00" size={24} fill="#333333" className="opacity-60" />
-              </div>
-              <div className="flex items-center gap-2 pl-[16px]">
-                <span className="text-[16px] text-[#333]/38">中文</span>
-                <div className="bg-black/10 rounded-full px-2 py-[3px]">
-                  <span className="text-[13px] text-[#333]">分段處理中</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Option 5: English (Error) */}
-            <div className="flex items-center h-[56px] border-b border-black/12 opacity-50 cursor-not-allowed">
-               <div className="p-[9px]">
-                <Icon name="p26f9ce00" size={24} fill="#333333" className="opacity-60" />
-              </div>
-              <div className="flex items-center gap-2 pl-[16px]">
-                <span className="text-[16px] text-[#333]/38">English</span>
-                <div className="bg-black/10 rounded-full px-2 py-[3px]">
-                  <span className="text-[13px] text-[#333]">分段異常，請聯繫客服</span>
-                </div>
-              </div>
-            </div>
-
-             {/* Option 6: Vietnamese (Not Supported) */}
-             <div className="flex items-center h-[56px] opacity-50 cursor-not-allowed">
-               <div className="p-[9px]">
-                <Icon name="p26f9ce00" size={24} fill="#333333" className="opacity-60" />
-              </div>
-              <div className="flex items-center gap-2 pl-[16px]">
-                <span className="text-[16px] text-[#333]/38">Tiếng Việt</span>
-                <div className="bg-black/10 rounded-full px-2 py-[3px]">
-                  <span className="text-[13px] text-[#333]">目前不支援中英文以外語言</span>
-                </div>
               </div>
             </div>
 
