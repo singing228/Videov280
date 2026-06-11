@@ -67,7 +67,7 @@ export function AiSegmentSelectionDialog({
               AI 分段結果預覽
             </Dialog.Title>
             <Dialog.Description className="text-[14px] text-[#666] leading-[1.5]">
-              您已有手動編輯的分段內容。為避免覆蓋您的心血，請從下方清單勾選您希望加入的段落。匯入後，系統將自動依時間順序重新排列所有分段。
+              您已有手動編輯的分段內容。為避免覆蓋您的心血，請從下方清單勾選您希望加入的分段。匯入後，系統將自動依時間順序重新排列所有分段。
             </Dialog.Description>
           </div>
 

@@ -27,23 +27,17 @@ export function AiImportDialog({ open, onClose, onConfirm }: AiImportDialogProps
         {/* Title */}
         <div className="px-[24px] py-[16px]">
           <h2 className="text-[20px] text-[#333] font-normal leading-[1.235] tracking-[0.25px]">
-            新增 AI 分段
+            選擇 AI 分段語言
           </h2>
         </div>
 
         {/* Content */}
         <div className="px-[24px] py-[16px] border-t border-b border-black/12 flex flex-col gap-[8px]">
-          <p className="text-[16px] text-[#333] mb-2">
-            請選擇一個字幕檔，匯入 AI 依該字幕生成的分段：
+          <p className="text-[16px] text-[#333] mb-4 leading-[1.5]">
+            系統已為這部影片準備好 AI 分段（分段切分位置相同），請選擇標題要使用的語言：
           </p>
 
-          <div className="flex flex-col w-full min-h-[448px]">
-
-            {/* Group Header */}
-            <div className="py-[16px] pl-[16px] border-b border-black/12">
-              <span className="text-[16px] font-bold text-[#333]">語音辨識自動生成字幕</span>
-            </div>
-
+          <div className="flex flex-col w-full">
             {/* Option 1: Auto Original */}
             <div
               className="flex items-center h-[56px] border-b border-black/12 cursor-pointer hover:bg-gray-50"
@@ -57,18 +51,17 @@ export function AiImportDialog({ open, onClose, onConfirm }: AiImportDialogProps
                   className={selected !== "auto-original" ? "opacity-60" : ""}
                 />
               </div>
-              <div className="flex flex-col pl-[16px]">
-                <span className="text-[16px] text-[#333]">影片原文</span>
-                <span className="text-[12px] text-[#333]/60 leading-[1.66] tracking-[0.4px]">目前只支援中文</span>
+              <div className="pl-[16px]">
+                <span className="text-[16px] text-[#333]">中文</span>
               </div>
             </div>
 
-            {/* Option 2: English */}
+            {/* Option 2: Auto English */}
             <div
               className="flex items-center h-[56px] border-b border-black/12 cursor-pointer hover:bg-gray-50"
               onClick={() => setSelected("auto-english")}
             >
-              <div className="p-[9px]">
+               <div className="p-[9px]">
                 <Icon
                   name={selected === "auto-english" ? "p4501f00" : "p26f9ce00"}
                   size={24}
@@ -81,12 +74,12 @@ export function AiImportDialog({ open, onClose, onConfirm }: AiImportDialogProps
               </div>
             </div>
 
-            {/* Option 3: Bilingual */}
+            {/* Option 3: Auto Bilingual */}
             <div
               className="flex items-center h-[56px] cursor-pointer hover:bg-gray-50"
               onClick={() => setSelected("auto-bilingual")}
             >
-              <div className="p-[9px]">
+               <div className="p-[9px]">
                 <Icon
                   name={selected === "auto-bilingual" ? "p4501f00" : "p26f9ce00"}
                   size={24}
@@ -98,7 +91,6 @@ export function AiImportDialog({ open, onClose, onConfirm }: AiImportDialogProps
                 <span className="text-[16px] text-[#333]">中英雙語</span>
               </div>
             </div>
-
           </div>
         </div>
 

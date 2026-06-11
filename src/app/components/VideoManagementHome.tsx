@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Icon } from "./Icon";
+import { List } from "lucide-react";
 import imgImage from "figma:asset/0b94836757e4c114fdc9784bbc7c6fff97d85cc4.png";
 import imgImage2 from "figma:asset/bee1a7d0d18e36a7da1beb866ef0a2403f464d45.png";
 import imgThumbnail from "figma:asset/0bbb01f3ab78722bf54745c80c9632e03a783864.png";
 
-function TooltipIcon({ iconName, tooltipText, onClick }: { iconName: string; tooltipText: string; onClick?: () => void }) {
+function TooltipIcon({ iconName, tooltipText, onClick, lucideIcon }: { iconName?: string; tooltipText: string; onClick?: () => void; lucideIcon?: React.ElementType }) {
   const [show, setShow] = useState(false);
-  
+
   return (
-    <div 
+    <div
       className="relative w-6 h-6 flex items-center justify-center rounded-full hover:bg-black/5 cursor-pointer"
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
@@ -17,7 +18,11 @@ function TooltipIcon({ iconName, tooltipText, onClick }: { iconName: string; too
         onClick?.();
       }}
     >
-      <Icon name={iconName} size={18} fill="black" className="opacity-56" />
+      {lucideIcon ? (
+        React.createElement(lucideIcon, { size: 18, className: "opacity-56" })
+      ) : iconName ? (
+        <Icon name={iconName} size={18} fill="black" className="opacity-56" />
+      ) : null}
       {show && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-[8px] py-[4px] bg-white rounded-[4px] shadow-[0px_1px_8px_0px_rgba(0,0,0,0.12),0px_3px_4px_0px_rgba(0,0,0,0.14),0px_3px_3px_-2px_rgba(0,0,0,0.2)] z-50 whitespace-nowrap border border-black/5">
           <span className="text-[12px] text-[#333] tracking-[0.4px] block leading-[1.66]">
@@ -122,7 +127,7 @@ export function VideoManagementHome({ onNavigateToEditor, onNavigateToPlayer }: 
                   <div className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-black/5 cursor-pointer" title="字幕">
                     <Icon name="p1a1e8980" size={18} fill="black" className="opacity-56" />
                   </div>
-                  <TooltipIcon iconName="pa22b700" tooltipText="摘要及段落管理" onClick={onNavigateToEditor} />
+                  <TooltipIcon lucideIcon={List} tooltipText="摘要及段落管理" onClick={onNavigateToEditor} />
                 </div>
               </div>
             </div>
@@ -174,7 +179,7 @@ export function VideoManagementHome({ onNavigateToEditor, onNavigateToPlayer }: 
                   <div className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-black/5 cursor-pointer">
                     <Icon name="p1a1e8980" size={18} fill="black" className="opacity-56" />
                   </div>
-                  <TooltipIcon iconName="pa22b700" tooltipText="摘要及段落管理" onClick={onNavigateToEditor} />
+                  <TooltipIcon lucideIcon={List} tooltipText="摘要及段落管理" onClick={onNavigateToEditor} />
                 </div>
               </div>
             </div>
@@ -213,7 +218,7 @@ export function VideoManagementHome({ onNavigateToEditor, onNavigateToPlayer }: 
                   <div className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-black/5 cursor-pointer">
                     <Icon name="p1a1e8980" size={18} fill="black" className="opacity-56" />
                   </div>
-                  <TooltipIcon iconName="pa22b700" tooltipText="摘要及段落管理" onClick={onNavigateToEditor} />
+                  <TooltipIcon lucideIcon={List} tooltipText="摘要及段落管理" onClick={onNavigateToEditor} />
                 </div>
               </div>
             </div>

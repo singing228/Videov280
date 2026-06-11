@@ -128,10 +128,10 @@ export function VideoPlayerPage({
                                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[260px] bg-white p-3 rounded-lg shadow-[0px_4px_20px_rgba(0,0,0,0.15)] z-[100] border border-black/10 cursor-auto text-left">
                                      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-black/10 rotate-45"></div>
                                      <p className="text-[13px] text-[#333] leading-[1.5] mb-2 tracking-[0.2px]">
-                                       此區內容由授課老師提供，可能經過 NTU COOL 校內 AI 協助生成後由老師審核。
+                                       此內容可能由授課老師親自撰寫，或透過 NTU COOL 的 AI 協助產生後經老師審核修改。實際內容請以老師授課為主。
                                      </p>
                                      <p className="text-[13px] text-[#333] leading-[1.5] tracking-[0.2px]">
-                                       🔒 所有 AI 運算皆於校內機房執行，不使用雲端服務，課程內容不會外流。
+                                       AI 摘要由 NTU COOL 團隊於校內機房運算生成，未使用雲端 AI 服務。
                                      </p>
                                    </div>
                                  )}
@@ -284,10 +284,10 @@ export function VideoPlayerPage({
                         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[260px] bg-white p-3 rounded-lg shadow-[0px_4px_20px_rgba(0,0,0,0.15)] z-[100] border border-black/10 cursor-auto text-left">
                           <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-black/10 rotate-45"></div>
                           <p className="text-[13px] text-[#333] leading-[1.5] mb-2 tracking-[0.2px]">
-                            此區內容由授課老師提供，可能經過 NTU COOL 校內 AI 協助生成後由老師審核。
+                            此內容可能由授課老師親自撰寫，或透過 NTU COOL 的 AI 協助產生後經老師審核修改。實際內容請以老師授課為主。
                           </p>
                           <p className="text-[13px] text-[#333] leading-[1.5] tracking-[0.2px]">
-                            🔒 所有 AI 運算皆於校內機房執行，不使用雲端服務，課程內容不會外流。
+                            AI 內容由 NTU COOL 團隊於校內機房運算生成，未使用雲端 AI 服務。
                           </p>
                         </div>
                       )}
@@ -310,7 +310,7 @@ export function VideoPlayerPage({
                 {validSegments.length === 0 ? (
                   <div className="flex flex-col items-center justify-center pt-10 text-center px-4">
                     <span className="text-[14px] text-[#333] opacity-60 tracking-[0.17px]">
-                      目前沒有段落
+                      目前沒有分段
                     </span>
                   </div>
                 ) : (
@@ -322,7 +322,7 @@ export function VideoPlayerPage({
                     >
                       <span className="text-[12px] text-[#757575] tracking-[0.4px] leading-[1.66] shrink-0">{segment.time}</span>
                       <span className="flex-1 text-[14px] text-[#333] tracking-[0.17px] leading-[1.43]">
-                        {segment.title || "未命名段落"}
+                        {segment.title || "未命名分段"}
                       </span>
                     </div>
                   ))
