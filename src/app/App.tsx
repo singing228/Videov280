@@ -15,7 +15,7 @@ interface Segment {
 
 export default function App() {
   const [page, setPage] = useState<"editor" | "home" | "player">("editor");
-  const [currentTime, setCurrentTime] = useState(333);
+  const [currentTime, setCurrentTime] = useState(15);
 
   // Shared state for editor page - Initialize with system first segment
   const [editorSegments, setEditorSegments] = useState<Segment[]>([

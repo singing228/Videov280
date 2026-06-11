@@ -13,7 +13,7 @@ interface Segment {
 const mockComments: Comment[] = [
   {
     id: 1,
-    time: "00:03:15",
+    time: "00:00:08",
     author: "王小明",
     content: "這個部分的解釋非常清楚，讓我更理解兒童幸福感的定義。謝謝老師的分享！",
     isAnonymous: false,
@@ -21,7 +21,7 @@ const mockComments: Comment[] = [
   },
   {
     id: 2,
-    time: "00:12:40",
+    time: "00:00:24",
     author: "匿名用戶",
     content: "這裡提到的影響因素很實用，想請問老師是否有相關的研究文獻可以參考？",
     isAnonymous: true,
@@ -29,7 +29,7 @@ const mockComments: Comment[] = [
   },
   {
     id: 3,
-    time: "00:18:55",
+    time: "00:00:40",
     author: "李同學",
     content: "關於學業成績與幸福感的關聯性，我覺得這是一個很值得深入探討的議題。期待老師後續能有更多討論。",
     isAnonymous: false,
@@ -48,7 +48,7 @@ export function VideoPlayerPage({
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-  const [currentTime, setCurrentTime] = useState(333);
+  const [currentTime, setCurrentTime] = useState(15);
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const [showSummaryTooltip, setShowSummaryTooltip] = useState(false);
 

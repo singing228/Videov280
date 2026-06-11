@@ -46,6 +46,7 @@ export function SegmentEditor({
   const [isPublished, setIsPublished] = useState(false);
   
   const [isDirty, setIsDirty] = useState(false);
+  const [touchedTitleIds, setTouchedTitleIds] = useState<Set<number>>(new Set());
 
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -72,8 +73,9 @@ export function SegmentEditor({
 
   const hasDuplicateError = segments.some(s => s.time !== "00:00:00" && timeCounts[s.time] > 1);
   const hasTitleError = segments.some(s => s.title.length > 50);
+  const hasEmptyTitleError = segments.some(s => s.title.trim() === "");
   const hasDurationError = segments.some(s => parseTimeToSeconds(s.time) > TOTAL_DURATION_SECONDS);
-  const hasError = hasTitleError || hasDuplicateError || hasDurationError;
+  const hasError = hasTitleError || hasEmptyTitleError || hasDuplicateError || hasDurationError;
 
   // Check if there are any AI-generated segments
   const hasAiSegments = segments.some(s => s.source === 'ai');
@@ -168,42 +170,42 @@ export function SegmentEditor({
   const getMockSegments = (id: string) => {
     if (id === "auto-original") {
       return [
-        { time: "00:00:15", title: "課程簡介與目標" },
-        { time: "00:08:30", title: "電影聲音的歷史演變" },
-        { time: "00:15:45", title: "聲音與畫面的互動關係" },
-        { time: "00:24:20", title: "經典案例分析：教父" },
-        { time: "00:32:10", title: "現場錄音的挑戰" },
-        { time: "00:45:00", title: "後期配音與音效製作" },
-        { time: "00:58:30", title: "配樂的情緒引導作用" },
-        { time: "01:10:15", title: "數位時代的聲音設計" },
-        { time: "01:22:50", title: "學生作品講評與討論" },
-        { time: "01:30:00", title: "課程總結與下週預告" }
+        { time: "00:00:02", title: "課程簡介與目標" },
+        { time: "00:00:08", title: "電影聲音的歷史演變" },
+        { time: "00:00:14", title: "聲音與畫面的互動關係" },
+        { time: "00:00:20", title: "經典案例分析：教父" },
+        { time: "00:00:26", title: "現場錄音的挑戰" },
+        { time: "00:00:32", title: "後期配音與音效製作" },
+        { time: "00:00:38", title: "配樂的情緒引導作用" },
+        { time: "00:00:44", title: "數位時代的聲音設計" },
+        { time: "00:00:48", title: "學生作品講評與討論" },
+        { time: "00:00:51", title: "課程總結與下週預告" }
       ];
     } else if (id === "auto-english") {
       return [
-        { time: "00:00:15", title: "Course Introduction and Goals" },
-        { time: "00:08:30", title: "Historical Evolution of Film Sound" },
-        { time: "00:15:45", title: "Interaction between Sound and Image" },
-        { time: "00:24:20", title: "Case Study: The Godfather" },
-        { time: "00:32:10", title: "Challenges of Location Recording" },
-        { time: "00:45:00", title: "Post-production Dubbing and FX" },
-        { time: "00:58:30", title: "Emotional Guidance of Scoring" },
-        { time: "01:10:15", title: "Sound Design in the Digital Age" },
-        { time: "01:22:50", title: "Student Work Review and Discussion" },
-        { time: "01:30:00", title: "Summary and Next Week Preview" }
+        { time: "00:00:02", title: "Course Introduction and Goals" },
+        { time: "00:00:08", title: "Historical Evolution of Film Sound" },
+        { time: "00:00:14", title: "Interaction between Sound and Image" },
+        { time: "00:00:20", title: "Case Study: The Godfather" },
+        { time: "00:00:26", title: "Challenges of Location Recording" },
+        { time: "00:00:32", title: "Post-production Dubbing and FX" },
+        { time: "00:00:38", title: "Emotional Guidance of Scoring" },
+        { time: "00:00:44", title: "Sound Design in the Digital Age" },
+        { time: "00:00:48", title: "Student Work Review and Discussion" },
+        { time: "00:00:51", title: "Summary and Next Week Preview" }
       ];
     } else if (id === "auto-bilingual") {
       return [
-        { time: "00:00:15", title: "課程簡介與目標 Course Introduction and Goals" },
-        { time: "00:08:30", title: "電影聲音的歷史演變 Historical Evolution of Film Sound" },
-        { time: "00:15:45", title: "聲音與畫面的互動關係 Interaction between Sound and Image" },
-        { time: "00:24:20", title: "經典案例分析：教父 Case Study: The Godfather" },
-        { time: "00:32:10", title: "現場錄音的挑戰 Challenges of Location Recording" },
-        { time: "00:45:00", title: "後期配音與音效製作 Post-production Dubbing and FX" },
-        { time: "00:58:30", title: "配樂的情緒引導作用 Emotional Guidance of Scoring" },
-        { time: "01:10:15", title: "數位時代的聲音設計 Sound Design in the Digital Age" },
-        { time: "01:22:50", title: "學生作品講評與討論 Student Work Review and Discussion" },
-        { time: "01:30:00", title: "課程總結與下週預告 Summary and Next Week Preview" }
+        { time: "00:00:02", title: "課程簡介與目標 Course Introduction and Goals" },
+        { time: "00:00:08", title: "電影聲音的歷史演變 Historical Evolution of Film Sound" },
+        { time: "00:00:14", title: "聲音與畫面的互動關係 Interaction between Sound and Image" },
+        { time: "00:00:20", title: "經典案例分析：教父 Case Study: The Godfather" },
+        { time: "00:00:26", title: "現場錄音的挑戰 Challenges of Location Recording" },
+        { time: "00:00:32", title: "後期配音與音效製作 Post-production Dubbing and FX" },
+        { time: "00:00:38", title: "配樂的情緒引導作用 Emotional Guidance of Scoring" },
+        { time: "00:00:44", title: "數位時代的聲音設計 Sound Design in the Digital Age" },
+        { time: "00:00:48", title: "學生作品講評與討論 Student Work Review and Discussion" },
+        { time: "00:00:51", title: "課程總結與下週預告 Summary and Next Week Preview" }
       ];
     }
     return [];
@@ -411,7 +413,6 @@ export function SegmentEditor({
             ? "bg-[#E8F5E9] text-[#2E7D32]"
             : "bg-[#F5F5F5] text-[#757575]"
         }`}>
-          <div className={`w-1.5 h-1.5 rounded-full ${isPublished ? "bg-[#2E7D32]" : "bg-[#757575]"}`} />
           {isPublished ? "已發佈" : "未發佈"}
         </div>
       </div>
@@ -463,11 +464,6 @@ export function SegmentEditor({
                     className={`w-full text-[16px] bg-transparent outline-none font-normal ${isSystemSegment ? "text-[#333]/38 cursor-not-allowed" : segment.time === "00:00:00" ? "text-[#333]/38" : "text-[#333]"}`}
                   />
                 </div>
-                {isSystemSegment && (
-                  <div className="text-[#757575] text-[12px] px-0 pt-[3px] tracking-[0.4px] leading-[1.66]">
-                    首段（固定）
-                  </div>
-                )}
                 {isDuplicateTime && (
                   <div className="text-[#CC0000] text-[12px] px-0 pt-[3px] tracking-[0.4px] leading-[1.66]">
                     時間重複
@@ -482,37 +478,52 @@ export function SegmentEditor({
 
               {/* Title Input */}
               <div className="flex-1">
-                <div className={`relative border rounded px-3 py-2 ${segment.title.length > 50 ? 'border-[#CC0000]' : 'border-black/23'}`}>
-                  <input
-                    type="text"
-                    value={segment.title}
-                    onChange={(e) => {
-                      const newSegments = segments.map(s =>
-                        s.id === segment.id
-                          ? { ...s, title: e.target.value, source: isSystemSegment ? 'system' as const : 'manual' as const }
-                          : s
-                      );
-                      setSegments(newSegments);
-                      setIsDirty(true);
-                    }}
-                    className={`w-full text-[16px] text-[#333] bg-transparent outline-none ${segment.source === 'ai' ? 'pr-10' : ''}`}
-                    style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}
-                    title={segment.title}
-                    onFocus={e => e.currentTarget.style.textOverflow = 'clip'}
-                    onBlur={e => e.currentTarget.style.textOverflow = 'ellipsis'}
-                    placeholder={isSystemSegment ? "請輸入影片開頭" : " "}
-                  />
-                  {segment.source === 'ai' && (
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center bg-[#E3F2FD] text-[#0099CC] text-[12px] px-2 py-0.5 rounded font-medium">
-                      AI
-                    </span>
-                  )}
-                </div>
-                {segment.title.length > 50 && (
-                  <div className="text-[#CC0000] text-[12px] px-[14px] pt-[3px] tracking-[0.4px] leading-[1.66]">
-                    字數上限為 50 個字
-                  </div>
-                )}
+                {(() => {
+                  const isEmptyTitle = segment.title.trim() === "";
+                  const showEmptyError = isEmptyTitle && touchedTitleIds.has(segment.id);
+                  return (
+                    <>
+                      <div className={`relative border rounded px-3 py-2 ${segment.title.length > 50 || showEmptyError ? 'border-[#CC0000]' : 'border-black/23'}`}>
+                        <input
+                          type="text"
+                          value={segment.title}
+                          onChange={(e) => {
+                            const newSegments = segments.map(s =>
+                              s.id === segment.id
+                                ? { ...s, title: e.target.value, source: isSystemSegment ? 'system' as const : 'manual' as const }
+                                : s
+                            );
+                            setSegments(newSegments);
+                            setIsDirty(true);
+                          }}
+                          className={`w-full text-[16px] text-[#333] bg-transparent outline-none ${segment.source === 'ai' ? 'pr-10' : ''}`}
+                          style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}
+                          title={segment.title}
+                          onFocus={e => e.currentTarget.style.textOverflow = 'clip'}
+                          onBlur={e => {
+                            e.currentTarget.style.textOverflow = 'ellipsis';
+                            setTouchedTitleIds(prev => new Set(prev).add(segment.id));
+                          }}
+                          placeholder={isSystemSegment ? "請輸入影片開頭" : " "}
+                        />
+                        {segment.source === 'ai' && (
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center bg-[#E3F2FD] text-[#0099CC] text-[12px] px-2 py-0.5 rounded font-medium">
+                            AI
+                          </span>
+                        )}
+                      </div>
+                      {segment.title.length > 50 ? (
+                        <div className="text-[#CC0000] text-[12px] px-[14px] pt-[3px] tracking-[0.4px] leading-[1.66]">
+                          字數上限為 50 個字
+                        </div>
+                      ) : showEmptyError && (
+                        <div className="text-[#CC0000] text-[12px] px-[14px] pt-[3px] tracking-[0.4px] leading-[1.66]">
+                          請輸入標題
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
 
               {/* Delete Icon - Hidden for system segment */}

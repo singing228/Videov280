@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  RotateCw, 
-  Volume2, 
-  Maximize, 
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  RotateCw,
+  Volume2,
+  Maximize,
   Captions,
   ListVideo,
   Settings
 } from "lucide-react";
-import imgVideo from "figma:asset/40d6516d8419860fd036d8ee2c01b6d8ebce5bf4.png";
+import sampleVideo from "../../assets/sample-video.mp4";
 
-export const TOTAL_DURATION_SECONDS = 5780; // 1:36:20
+export const TOTAL_DURATION_SECONDS = 52; // 0:52 (sample-video.mp4 length - Sintel trailer)
 
 export const parseTimeToSeconds = (timeStr: string) => {
   const parts = timeStr.split(':').map(Number);
@@ -64,9 +64,10 @@ export function VideoPlayer({
   variant = 'default'
 }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [internalTime, setInternalTime] = useState(333); // Start at 5:33 roughly
+  const [internalTime, setInternalTime] = useState(15); // Start a few seconds in
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const isControlled = externalTime !== undefined;
   const currentTime = isControlled ? externalTime : internalTime;
@@ -84,16 +85,36 @@ export function VideoPlayer({
     }
   };
 
-  // Simulate video playing
+  // Keep the <video> element's play/pause state in sync with isPlaying
   useEffect(() => {
-    let interval: any;
+    const video = videoRef.current;
+    if (!video) return;
     if (isPlaying) {
-      interval = setInterval(() => {
-        handleTimeChange(currentTime + 1);
-      }, 1000);
+      video.play().catch(() => {});
+    } else {
+      video.pause();
     }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTime]); // Depend on currentTime to increment from it
+  }, [isPlaying]);
+
+  // Seek the <video> element when currentTime changes from outside normal playback
+  // (timeline click, chapter click, skip buttons, external control)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (Math.abs(video.currentTime - currentTime) > 0.5) {
+      video.currentTime = currentTime;
+    }
+  }, [currentTime]);
+
+  const handleVideoTimeUpdate = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    handleTimeChange(Math.floor(video.currentTime));
+  };
+
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+  };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -143,7 +164,14 @@ export function VideoPlayer({
         {/* Video Area */}
         <div className="w-full relative aspect-video bg-black rounded overflow-hidden group flex flex-col">
              <div className="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
-                <img src={imgVideo} alt="Video Player" className="w-full h-full object-contain opacity-90" />
+                <video
+                  ref={videoRef}
+                  src={sampleVideo}
+                  className="w-full h-full object-contain"
+                  onTimeUpdate={handleVideoTimeUpdate}
+                  onEnded={handleVideoEnded}
+                  playsInline
+                />
                 
                 {/* Comment Banner - Bottom Right */}
                 {selectedComment && (

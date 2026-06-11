@@ -3,7 +3,7 @@ import { Icon } from "./Icon";
 import { List } from "lucide-react";
 import imgImage from "figma:asset/0b94836757e4c114fdc9784bbc7c6fff97d85cc4.png";
 import imgImage2 from "figma:asset/bee1a7d0d18e36a7da1beb866ef0a2403f464d45.png";
-import imgThumbnail from "figma:asset/0bbb01f3ab78722bf54745c80c9632e03a783864.png";
+import imgThumbnail from "../../assets/video-thumbnail-sintel.png";
 
 function TooltipIcon({ iconName, tooltipText, onClick, lucideIcon }: { iconName?: string; tooltipText: string; onClick?: () => void; lucideIcon?: React.ElementType }) {
   const [show, setShow] = useState(false);
@@ -116,7 +116,7 @@ export function VideoManagementHome({ onNavigateToEditor, onNavigateToPlayer }: 
               <div className="relative w-[110px] h-[65px] bg-gray-200 flex-shrink-0">
                 <img src={imgThumbnail} alt="Video Thumbnail" className="w-full h-full object-cover" />
                 <div className="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1 rounded">
-                  1:36:20
+                  0:52
                 </div>
               </div>
               <div className="flex flex-col gap-2">
